@@ -7,6 +7,8 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -31,12 +33,12 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
            $request->validate([
-            'title'=>'required',
-            'user_id'=>'required',  
+            'title'=>'required',  
             'excerpt'=>'required',
             'body'=>'required',
         ]);
         $request['slug']=Str::slug($request->title);
+        $request['user_id']=Auth::id();
         $input=$request->all();
         $post= Post::create($input);
         if($request->filled('categories')) {
@@ -85,6 +87,10 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
+        if (Gate::denies('update-post', $post)) {
+            abort(403, "Sorry Not Authorized");
+        }
+
         $input = $request->all();
 
          if($request->filled('categories')) {
@@ -108,7 +114,11 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-         $post  ->delete();
+        if (Gate::denies('update-post', $post)) {
+            abort(403, "Sorry Not Authorized");
+        }
+
+        $post  ->delete();
 
         return response(['message' => 'blog deleted!']);
 
