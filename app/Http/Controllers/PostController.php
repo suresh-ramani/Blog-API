@@ -7,6 +7,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Category;
+use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -20,7 +21,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $post=Post::all()->load('categories');
+        
+        $post=Post::withCount('comments')->with(['categories','user'])->get();
         return PostResource::collection($post);
     }
 
@@ -47,7 +49,7 @@ class PostController extends Controller
             $post->categories()->sync($categoryIds);
        }
 
-        return new PostResource($post->load('Categories'));
+        return new PostResource($post->withCount('comments')->with(['user','Categories'])->get());
     }
 
     public function createCategories(array $categories)
@@ -74,7 +76,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-      return new PostResource($post->load('categories'));   
+      return new PostResource($post->withCount('comments')->with(['user','Categories'])->get());   
     }
 
 
@@ -103,7 +105,7 @@ class PostController extends Controller
 
         $post->update($input);
 
-        return new PostResource($post->load('Categories'));
+        return new PostResource($post->withCount('comments')->with(['user','Categories'])->get());
     }
 
     /**
@@ -131,7 +133,8 @@ class PostController extends Controller
      */
     public function search($name)
     {
-        return post::where('title', 'like', '%'. $name . '%' )
+        return Post::where('title', 'like', '%'. $name . '%' )
         ->orWhere('body', 'like', '%'. $name . '%' )->get();
-    }
+    }   
+
 }
