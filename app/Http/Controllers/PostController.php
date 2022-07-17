@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\PostLike;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -22,7 +23,7 @@ class PostController extends Controller
     public function index()
     {
         
-        $post=Post::withCount('comments')->with(['categories','user'])->get();
+        $post=Post::withCount(['comments','likes'])->with(['categories','user'])->get();
         return PostResource::collection($post);
     }
 
@@ -48,8 +49,8 @@ class PostController extends Controller
             $categoryIds= $this->createCategories($request->categories); 
             $post->categories()->sync($categoryIds);
        }
-
-        return new PostResource($post->withCount('comments')->with(['user','Categories'])->get());
+       $post->withCount(['comments'.'likes'])->with(['user','Categories'])->get();
+        return new PostResource($post);
     }
 
     public function createCategories(array $categories)
@@ -74,9 +75,13 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
-    {
-      return new PostResource($post->withCount('comments')->with(['user','Categories'])->get());   
+    public function show($post)
+    {   
+        $post=Post::where('slug',$post)
+        ->withCount(['comments'.'likes'])
+        ->with(['user','Categories'])
+        ->first();
+        return new PostResource($post);   
     }
 
 
@@ -104,8 +109,8 @@ class PostController extends Controller
        }
 
         $post->update($input);
-
-        return new PostResource($post->withCount('comments')->with(['user','Categories'])->get());
+        $post->withCount(['comments','likes'])->with(['user','Categories'])->get();
+        return new PostResource($post);
     }
 
     /**
@@ -122,7 +127,9 @@ class PostController extends Controller
 
         $post  ->delete();
 
-        return response(['message' => 'blog deleted!']);
+        return response()->json([
+            'message'=>'Post Deleted!'
+        ],200);
 
     }
     /**
@@ -135,6 +142,35 @@ class PostController extends Controller
     {
         return Post::where('title', 'like', '%'. $name . '%' )
         ->orWhere('body', 'like', '%'. $name . '%' )->get();
-    }   
+    } 
+    
+    public function toggle_like(UpdatePostRequest $request,$post)
+    {
+        $post=Post::where('slug',$post)->first();
+        if($post){
+            $user= $request->user();
+            $post_like=postLike::where('post_id',$post->id)
+            ->where('user_id',Auth::id())->first();
+            if($post_like){
+                $post_like->delete();
+                return response()->json([
+                    'message'=>'Like successfullt removed'
+                ],200);
+            }else{
+                PostLike::create([
+                    'post_id'=>$post->id,
+                    'user_id'=>Auth::id()
+                ]);
+                return response()->json([
+                    'message'=>'Like successfullt added'
+                ],200);
+            }
+
+        }else{
+            return response()->json([
+                'message'=>'no posts found'
+            ],400);
+        }  
+    }
 
 }

@@ -30,6 +30,8 @@ Route::group(['middleware'=>['auth:sanctum']], function () {
     Route::get('/posts/{slug}/comments',[CommentController::class,'index']);
     Route::put('/posts/{comment_id}/update',[CommentController::class,'update']);
     Route::delete('/posts/{comment_id}/delete',[CommentController::class,'destroy']);
+    //Likes Api
+    Route::post('/posts/{post}/toggle-like',[PostController::class,'toggle_like']);
     //Categories Api
     Route::apiResource('categories',CategoryController::class);
     Route::get('/categories/search/{name}',[CategoryController::class,'search']);
