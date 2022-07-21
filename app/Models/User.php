@@ -21,6 +21,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'profession',
+        'profile_photo',
+    ];
+
+    public $appends=[
+        'image_url',
     ];
 
     /**
@@ -48,6 +54,14 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class,'user_id');
+    }
+    public function getImageUrlAttribute()
+    {
+        if($this->profile_photo){
+            return asset('/uploads/profile_images/'.$this->profile_photo);
+        }else{
+            return 'https://ui-avatars.com/api/?name='.urlencode($this->name);
+        }
     }
 
 }

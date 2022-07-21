@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -37,7 +38,12 @@ Route::group(['middleware'=>['auth:sanctum']], function () {
     Route::get('/categories/search/{name}',[CategoryController::class,'search']);
     //logout Api
     Route::post('/logout',  [UserController::class,'logout']);
+    //Profile Api
+    Route::put('/profile/change-password',[ProfileController::class,'change_password']);
+    Route::post('/profile/update-profile',[ProfileController::class,'update_profile']);
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
