@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
@@ -21,7 +22,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register',  [UserController::class,'register']);
 Route::post('/login',  [UserController::class,'login']);
+// for admin
+Route::prefix('admin')->middleware(['auth:sanctum','isAdmin'])->group(function (){
+    Route::get('/posts',[AdminController::class,'showPosts']);
+    Route::delete('/posts/{post}',[AdminController::class,'deletePost']);
+    Route::get('/users',[AdminController::class,'showUsers']);
+    Route::delete('/users/{user}',[AdminController::class,'deleteUser']);
+});
 
+//for user
 Route::group(['middleware'=>['auth:sanctum']], function () {
     //post Api
     Route::apiResource('posts',PostController::class);

@@ -49,7 +49,7 @@ class PostController extends Controller
             $categoryIds= $this->createCategories($request->categories); 
             $post->categories()->sync($categoryIds);
        }
-       $post->withCount(['comments'.'likes'])->with(['user','Categories'])->get();
+       $post->with(['user','Categories'])->get();
         return new PostResource($post);
     }
 
