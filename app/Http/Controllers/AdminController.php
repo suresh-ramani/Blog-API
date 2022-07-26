@@ -12,9 +12,15 @@ class AdminController extends Controller
 {
     public function ShowPosts()
     {
-        
+       
         $post=Post::withCount(['comments','likes'])->with(['categories','user'])->get();
-        return PostResource::collection($post);
+         if($post == [])
+        {
+            return response()->json([
+                'message'=>'No Posts Yet!'
+            ],404);
+        }else
+            return PostResource::collection($post);
     }
 
     public function deletePost(Post $post)
@@ -36,6 +42,7 @@ class AdminController extends Controller
     {
         if($user->role == 0)
         {
+            $user->posts()->delete();
             $user->delete();
             return response()->json([
                 'message'=>'User Deleted!'

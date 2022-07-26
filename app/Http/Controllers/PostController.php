@@ -24,7 +24,13 @@ class PostController extends Controller
     {
         
         $post=Post::withCount(['comments','likes'])->with(['categories','user'])->get();
-        return PostResource::collection($post);
+        if($post == [])
+        {
+            return response()->json([
+                'message'=>'No Posts Found'
+            ],404);
+        }else
+            return PostResource::collection($post);
     }
 
     /**
@@ -78,10 +84,16 @@ class PostController extends Controller
     public function show($post)
     {   
         $post=Post::where('slug',$post)
-        ->withCount(['comments'.'likes'])
+        ->withCount(['comments','likes'])
         ->with(['user','Categories'])
         ->first();
-        return new PostResource($post);   
+
+        if($post == []){
+            return response()->json([
+                'message'=>'No Post Found'
+            ],404); 
+        }else
+            return new PostResource($post);   
     }
 
 
@@ -97,6 +109,7 @@ class PostController extends Controller
         if (Gate::denies('update-post', $post)) {
             abort(403, "Sorry Not Authorized");
         }
+        
 
         $input = $request->all();
 
