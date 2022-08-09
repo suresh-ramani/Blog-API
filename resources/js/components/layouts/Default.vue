@@ -19,7 +19,7 @@
                                     {{ user.name }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="javascript:void(0)" @click="logout">Logout</a>
+                                    <a class="dropdown-item " href="javascript:void(0)" @click="logout">Logout</a>
                                 </div>
                             </li>
                         </ul>
