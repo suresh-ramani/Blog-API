@@ -24,11 +24,11 @@ class UserController extends Controller
             'password'=>bcrypt($fields['password'])
         ]);
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
+        // $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response=[
             'user' =>$user,
-            'token' =>$token
+            // 'token' =>$token
         ];
 
         return response($response,201);
@@ -51,11 +51,11 @@ class UserController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
+        // $token = $user->createToken('myapptoken')->plainTextToken;
 
         $response = [
             'user' => $user,
-            'token' => $token
+            // 'token' => $token
         ];
 
         return response($response, 201);
