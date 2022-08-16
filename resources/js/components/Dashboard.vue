@@ -12,9 +12,11 @@
                 </div>
             </div>
         </div>
+        <SideBarVue></SideBarVue>
     </div>
 </template>
 <script>
+import SideBarVue from './layouts/SideBar.vue';
 export default {
     name:"dashboard",
     data(){

@@ -5,7 +5,8 @@ const Login = () => import('@/components/Login.vue')
 const Register = () => import('@/components/Register.vue')
 /* Guest Component */
 /* Layouts */
-const DahboardLayout = () => import('@/components/layouts/Default.vue')
+const DashboardLayout = () => import('@/components/layouts/Default.vue')
+const SideBarLayout = () => import('@/components/layouts/SideBar.vue')
 /* Layouts */
 /* Authenticated Component */
 const Dashboard = () => import('@/components/Dashboard.vue')
@@ -31,7 +32,7 @@ const routes = [
     },
     {
         path: "/",
-        component: DahboardLayout,
+        component: SideBarLayout,
         meta: {
             middleware: "auth:sanctum"
         },
@@ -46,6 +47,7 @@ const routes = [
             }
         ]
     }
+    
 ]
 const router = createRouter({
     history: createWebHistory(),
@@ -54,16 +56,17 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     document.title = to.meta.title
     if (to.meta.middleware == "guest") {
-        if (store.state.auth.authenticated) {
-            next({ name: "dashboard" })
-        }
-        next()
-    } else {
-        if (store.state.auth.authenticated) {
-            next()
-        } else {
-            next({ name: "login" })
-        }
-    }
+    //     if (store.state.auth.authenticated) {
+             next({ name: "dashboard" })
+    //     }
+    //     next()
+    // } else {
+    //     if (store.state.auth.authenticated) {
+    //         next()
+    //     } else {
+    //         next({ name: "login" })
+    //     }
+    
+    }next()
 })
 export default router
